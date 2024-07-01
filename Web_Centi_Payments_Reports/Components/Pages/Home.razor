@@ -1,0 +1,76 @@
+﻿@page "/"
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<PageTitle>Home</PageTitle>
+
+<div class="main-container">
+    <h1>Panel de Reporte Centinela</h1>
+    <p>Seleccionar un Reporte para Visualizar:</p>
+    <div class="report-links">
+        <a href="/cliente" class="report-link">
+            <i class="fas fa-file-alt"></i> Reporte Pagos ALS
+        </a>
+        <a href="/codeudor" class="report-link">
+            <i class="fas fa-users"></i> Reporte Pagos Codeudores
+        </a>
+        <a href="/report3" class="report-link">
+            <i class="fas fa-chart-line"></i> Report 3
+        </a>
+    </div>
+</div>
+
+<style>
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: top;
+        justify-content: top;
+        height: 100vh;
+        background-color: #f8f9fa;
+        color: #343a40;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+
+    .report-links {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .report-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 15px 30px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .report-link i {
+        margin-right: 10px;
+    }
+
+    .report-link:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">

@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script>
+    function downloadFileFromStream(fileName, contentStreamReference) {
+        const fileUrl = URL.createObjectURL(contentStreamReference);
+        const anchorElement = document.createElement('a');
+        anchorElement.href = fileUrl;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
+        URL.revokeObjectURL(fileUrl);
+        }
+        function downloadFile(url, fileName) {
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+
+</body>
+</html>

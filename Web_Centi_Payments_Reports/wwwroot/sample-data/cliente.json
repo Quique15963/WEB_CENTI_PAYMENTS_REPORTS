@@ -1,0 +1,38 @@
+﻿[
+  {
+    "Cic": "123456",
+    "NroCuentaAls": "ALS123",
+    "Saldo": 1000.50,
+    "NroCuentaDebito": "DEB123",
+    "Sucursal": "Sucursal1",
+    "Moneda": "USD",
+    "TipoProducto": "Producto1",
+    "Situacion": "Activa",
+    "NombreSituacion": "Situacion1",
+    "MontoDebito": 150.75,
+    "Fecha": "2018-05-06T00:00:00",
+    "IdCuenta": "CUENTA123",
+    "Monto": 200.00,
+    "Glosa": "Glosa1",
+    "IdOperacion": "OP123",
+    "CodExtorno": "EXT123"
+  },
+  {
+    "Cic": "654321",
+    "NroCuentaAls": "ALS456",
+    "Saldo": 2000.75,
+    "NroCuentaDebito": "DEB456",
+    "Sucursal": "Sucursal2",
+    "Moneda": "EUR",
+    "TipoProducto": "Producto2",
+    "Situacion": "Inactiva",
+    "NombreSituacion": "Situacion2",
+    "MontoDebito": 250.50,
+    "Fecha": "2018-05-07T00:00:00",
+    "IdCuenta": "CUENTA456",
+    "Monto": 300.00,
+    "Glosa": "Glosa2",
+    "IdOperacion": "OP456",
+    "CodExtorno": "EXT456"
+  }
+]

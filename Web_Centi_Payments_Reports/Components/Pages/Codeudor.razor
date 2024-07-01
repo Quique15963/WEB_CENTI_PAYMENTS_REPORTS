@@ -1,0 +1,75 @@
+﻿@page "/codeudor"
+@attribute [StreamRendering]
+@using Web_Centi_Payments_Reports.Components.Entities;
+@using Web_Centi_Payments_Reports.Components.Services;
+
+@inject HttpClient Http;
+@inject ICodeudorService codeudorService;
+@inject IPdfService PdfService;
+@inject IJSRuntime JS;
+@inject IJSRuntime JSRuntime;
+
+<PageTitle>Codeudor</PageTitle>
+
+<h1>Codeudor</h1>
+
+<p>Lista de Codeudor.</p>
+
+@if (listaCodeudor == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID_OPERACION</th>
+                <th>APLICATIVO</th>
+                <th>CIC</th>
+                <th>NOMBRE</th>
+                <th>CUENTA_ALS</th>
+                <th>CUENTA_DEBITO</th>
+                <th>MONEDA</th>
+                <th>MONTO</th>
+                <th>SALDO</th>
+                <th>GLOSA</th>
+                <th>ID_OPERACION</th>
+                <th>FECHA_REGISTRO</th>
+                <th>COD_EXTORNO</th>
+                <th>idc_codeudor</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var codeudor in listaCodeudor)
+            {
+                <tr>
+                    <td>@codeudor.ID_OPERACION</td>
+                    <td>@codeudor.APLICATIVO</td>
+                    <td>@codeudor.CIC</td>
+                    <td>@codeudor.NOMBRE</td>
+                    <td>@codeudor.CUENTA_ALS</td>
+                    <td>@codeudor.CUENTA_DEBITO</td>
+                    <td>@codeudor.MONEDA</td>
+                    <td>@codeudor.MONTO</td>
+                    <td>@codeudor.SALDO</td>
+                    <td>@codeudor.GLOSA</td>
+                    <td>@codeudor.ID_OPERACION</td>
+                    <td>@codeudor.FECHA_REGISTRO</td>
+                    <td>@codeudor.COD_EXTORNO</td>
+                    <td>@codeudor.idc_codeudor</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    List<CodeudorInfo>? listaCodeudor = null;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        listaCodeudor = await codeudorService.Lista();
+    }
+}

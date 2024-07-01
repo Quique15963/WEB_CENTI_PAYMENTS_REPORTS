@@ -1,0 +1,36 @@
+﻿@page "/logins"
+@inject NavigationManager Navigation
+@using Web_Centi_Payments_Reports.Components.Services;
+@inject IAuthService AuthService
+
+@code {
+    private string username;
+    private string password;
+
+    private void HandleLogin()
+    {
+        AuthService.Login(username, password);
+        if (AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            Console.WriteLine("error al Ingresar.");
+        }
+    }
+}
+
+<EditForm Model="@this" OnValidSubmit="HandleLogin" class="login-form">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>Username:</label>
+        <InputText @bind-Value="username" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="password" type="password" />
+    </div>
+    <button type="submit">Login</button>
+</EditForm>

@@ -1,0 +1,24 @@
+﻿@page
+@model Web_Centi_Payments_Reports.Components.Pages._HostModel
+@{
+
+}
+<script>
+    function downloadFileFromStream(fileName, contentStreamReference) {
+        const fileUrl = URL.createObjectURL(contentStreamReference);
+        const anchorElement = document.createElement('a');
+        anchorElement.href = fileUrl;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
+        URL.revokeObjectURL(fileUrl);
+    }
+    function downloadFile(url, fileName) {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>

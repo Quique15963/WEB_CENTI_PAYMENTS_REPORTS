@@ -1,0 +1,109 @@
+﻿@page "/weather"
+@attribute [StreamRendering]
+@using Web_Centi_Payments_Reports.Components.Services;
+@using Web_Centi_Payments_Reports.Components.XLS;
+@inject IPdfService PdfService
+@inject IJSRuntime JS
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+<input type="date" @bind="searchDate" class="search-box" placeholder="Buscar por fecha..." />
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in filteredForecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button @onclick="DownloadPdf">Download PDF</button>
+    <br />
+}
+
+<style>
+    .search-box {
+        margin-bottom: 20px;
+        padding: 10px;
+        width: 100%;
+        max-width: 400px;
+        font-size: 1rem;
+    }
+</style>
+
+@code {
+    private WeatherForecast[]? forecasts;
+    private DateOnly? searchDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(100);
+
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = startDate.AddDays(index),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = summaries[Random.Shared.Next(summaries.Length)]
+            }).ToArray();
+    }
+
+    private IEnumerable<WeatherForecast> filteredForecasts =>
+        searchDate == null ? forecasts : forecasts.Where(f => f.Date == searchDate);
+
+    private async Task DownloadPdf()
+    {
+        var htmlContent = GenerateHtmlContent();
+        var pdfBytes = PdfService.GeneratePdf(htmlContent);
+
+        var fileName = "WeatherReport.pdf";
+        var contentType = "application/pdf";
+
+        using var streamRef = new DotNetStreamReference(new MemoryStream(pdfBytes));
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+
+    private string GenerateHtmlContent()
+    {
+        var html = "<html><body><h1>Weather Report</h1><table><thead><tr><th>Date</th><th>Temp. (C)</th><th>Temp. (F)</th><th>Summary</th></tr></thead><tbody>";
+        foreach (var forecast in filteredForecasts)
+        {
+            html += $"<tr><td>{forecast.Date.ToShortDateString()}</td><td>{forecast.TemperatureC}</td><td>{forecast.TemperatureF}</td><td>{forecast.Summary}</td></tr>";
+        }
+        html += "</tbody></table></body></html>";
+        return html;
+    }
+
+    private class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}

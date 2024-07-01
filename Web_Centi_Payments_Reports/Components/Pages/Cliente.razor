@@ -1,0 +1,166 @@
+﻿@page "/cliente"
+@attribute [StreamRendering]
+@using Web_Centi_Payments_Reports.Components.Entities;
+@using Web_Centi_Payments_Reports.Components.Services;
+@using Web_Centi_Payments_Reports.Components.XLS;
+@inject IClienteService clienteService;
+@inject IPdfService PdfService;
+@inject IJSRuntime JSRuntime;
+@inject HttpClient Http;  
+
+<PageTitle>Cliente</PageTitle>
+
+<h1>Cliente</h1>
+<p>Lista de Clientes.</p>
+
+<input type="date" @onchange="@BuscarPorFecha" class="search-box" placeholder="Buscar por fecha..." />
+
+@if (listaCliente == null)
+{
+   <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID OPERACION</th>                
+                <th>CIC</th>
+                <th>NRO. CUENTA REPEXT</th>
+                <th>MONEDA</th>
+                <th>MONTO</th>
+                <th>MONTO PROCESADO</th>
+                <th>MONTO RESTANTE</th>
+                <th>PENDIENTE</th>
+                <th>GLOSA</th>
+                <th>NRO. CREDITO</th>
+                <th>FECHA DE PAGO</th>
+                <th>APLICATIVO</th>
+                <th>ESTADO OPERACION</th>
+                <th>CODIGO SITUACION</th>
+                <th>DIAS MORA</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cliente in listaCliente)
+            {
+                <tr>
+                    <td>@cliente._IdOperacion</td>
+                    <td>@cliente._Cic</td>
+                    <td>@cliente._NroCredito</td>
+                    <td>@cliente._Moneda</td>
+                    <td>@cliente._Monto</td>
+                    <td>@cliente._MontoProcesado</td>
+                    <td>@cliente._MontoRestante</td>
+                    <td>@cliente._Pendiente</td>
+                    <td>@cliente._Glosa</td>
+                    <td>@cliente._CuentaRepext</td>
+                    <td>@cliente._FechaReg</td>
+                    <td>@cliente._TipoOperacion</td>
+                    <td>@cliente._EstadoOperacion</td>
+                    <td>@cliente._CodigoSituacion</td>
+                    <td>@cliente._DiasMora</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        @if (currentPage > 1)
+        {
+            <button class="btn btn-primary" @onclick="@PreviousPage">Anterior</button>
+        }
+        @if (currentPage < totalPages)
+        {
+            <button class="btn btn-primary" @onclick="@NextPage">Siguiente</button>
+        }
+    </div>
+
+    <br/>
+
+    <button type="button" class="btn btn-success" @onclick="ClickExportXLS">Crear XLSX</button>
+    <button type="button" class="btn btn-primary" @onclick="DescargarReporte">Descargar</button>
+}
+
+@code {
+    private DateTime? searchDate;
+    private int currentPage = 1;
+    private int pageSize = 10; // Define el tamaño de página
+    private int totalItems;
+    private int totalPages => (int)Math.Ceiling((double)totalItems / pageSize);
+
+    private List<ClienteInfo>? listaCliente = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaCliente = await clienteService.Lista();
+        totalItems = await clienteService.Count();
+        await LoadData();
+    }
+
+
+    private async Task LoadData()
+    {
+        listaCliente = await clienteService.GetPage(currentPage, pageSize);
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadData();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadData();
+        }
+    }
+    private async Task BuscarPorFecha(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var date))
+        {
+            searchDate = date;
+            listaCliente = listaCliente?.Where(c => c.Fecha.Date == searchDate.Value.Date).ToList();
+        }
+        else
+        {
+            listaCliente = listaCliente;
+        }
+    }
+
+    private async Task DescargarReporte()
+    {
+        var pdf = await PdfService.GenerarReporte(listaCliente.ToList());
+        var fileName = "ReporteClientes.pdf";
+        var fileContent = new byte[pdf.Length];
+        await pdf.ReadAsync(fileContent, 0, (int)pdf.Length);
+        var base64 = Convert.ToBase64String(fileContent);
+        var url = $"data:application/pdf;base64,{base64}";
+        await JSRuntime.InvokeVoidAsync("downloadFile", url, fileName);
+    }
+
+    private async Task ClickExportXLS()
+    {
+        var xls = new Excel();
+        await xls.GenerarClienteXLStAsync(JSRuntime, listaCliente, "export.xlsx");
+    }
+
+}
+
+<script>
+
+    function downloadFile(url, fileName) {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+</script>
